@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CTF 心语匹配 v7</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}
+:root{--rd:#A10D1F;--rd2:#86212E;--gd:#B78E6C;--bg:#F2F0F0;--gy:#796E65;--bk:#1D1D1D;--wh:#FFF;
+--bd:rgba(121,110,101,.15);--bdl:rgba(121,110,101,.08);
+--sh:0 2px 12px rgba(29,29,29,.06);--shl:0 8px 32px rgba(29,29,29,.1);--r:10px;--rc:12px}
+html,body{width:100%;height:100%;font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+background:#1a1612;color:var(--bk);font-size:14px;overflow:hidden;-webkit-font-smoothing:antialiased}
+.frame{position:relative;width:390px;height:844px;margin:20px auto;border-radius:44px;background:var(--bg);overflow:hidden;
+box-shadow:0 0 0 12px #2a221a,0 0 0 14px #3a2e22,0 30px 80px rgba(0,0,0,.5)}
+.sb{position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:flex-end;justify-content:space-between;
+padding:0 28px 6px;z-index:100;font-size:12px;font-weight:600;color:var(--wh)}
+.sb .t{font-size:15px;font-weight:700}.sb .ic{display:flex;gap:6px;font-size:11px}
+.di{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#000;border-radius:20px;z-index:200}
+.nav{position:sticky;top:0;height:50px;display:flex;align-items:center;justify-content:center;
+font-size:16px;font-weight:500;letter-spacing:3px;background:var(--wh);color:var(--bk);
+border-bottom:1px solid var(--bd);z-index:50}
+.hbn{position:absolute;right:18px;top:50%;transform:translateY(-50%);width:28px;height:28px;
+border-radius:50%;background:transparent;border:1px solid var(--gy);color:var(--gy);
+display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-family:inherit}
+.hbn:hover{border-color:var(--rd);color:var(--rd)}
+.page{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;transition:transform .45s,opacity .4s}
+.page::-webkit-scrollbar{display:none}
+.page.hidden{transform:translateX(100%);opacity:0;pointer-events:none}
+.page.out{transform:translateX(-30%);opacity:0;pointer-events:none}
+#lp{background:linear-gradient(180deg,#86212E 0%,#A10D1F 35%,#C04050 60%,var(--bg) 100%)}
+.lh{padding:120px 0 50px;text-align:center}
+.logo{max-width:200px;height:auto;margin:0 auto 20px;display:block;filter:brightness(0) invert(1);opacity:.95}
+.tag{font-size:13px;color:rgba(255,255,255,.85);letter-spacing:8px;margin-top:14px;font-weight:300}
+.ldl{width:40px;height:1px;background:rgba(255,255,255,.5);margin:18px auto 0}
+.card{margin:0 24px 40px;background:var(--wh);border-radius:var(--rc);padding:36px 28px;box-shadow:var(--shl)}
+.ft{text-align:center;font-size:14px;letter-spacing:6px;color:var(--bk);margin-bottom:28px;
+font-weight:500;font-family:'Songti SC',serif}
+.ft::after{content:'';display:block;width:30px;height:1px;background:var(--rd);margin:10px auto 0}
+.bw{width:100%;height:48px;display:flex;align-items:center;justify-content:center;gap:8px;
+background:#07C160;color:var(--wh);font-size:14px;font-weight:500;border:none;border-radius:var(--r);
+cursor:pointer;letter-spacing:2px;font-family:inherit}
+.bw:active{transform:scale(.98)}
+.dv{display:flex;align-items:center;margin:24px 0}
+.dv .ln{flex:1;height:1px;background:var(--bd)}
+.dv span{padding:0 14px;font-size:12px;color:var(--gy);letter-spacing:1px}
+.ig{margin-bottom:18px}
+.il{display:block;font-size:12px;color:var(--gy);margin-bottom:8px;font-weight:500;letter-spacing:1.5px}
+.if{width:100%;height:46px;border:1px solid var(--bd);border-radius:var(--r);padding:0 14px;font-size:14px;
+outline:none;background:var(--wh);color:var(--bk);font-family:inherit}
+.if:focus{border-color:var(--rd);box-shadow:0 0 0 3px rgba(161,13,31,.08)}
+.if::placeholder{color:#B5A89B}
+.cr{display:flex;gap:10px}.cr .if{flex:1}
+.bc{width:110px;height:46px;border:1px solid var(--rd);border-radius:var(--r);background:transparent;
+color:var(--rd);font-size:12px;cursor:pointer;font-family:inherit;font-weight:500}
+.bc:disabled{color:var(--gy);border-color:var(--bd);cursor:default}
+.bl{width:100%;height:48px;background:var(--rd2);color:var(--wh);border:none;border-radius:var(--r);
+font-size:15px;font-weight:500;letter-spacing:6px;cursor:pointer;margin-top:24px;font-family:inherit;transition:background .3s}
+.bl:hover:not(:disabled){background:var(--rd)}
+.bl:disabled{background:#E5DDD2!important;color:#B5A89B!important;cursor:default}
+.bl:not(:disabled):active{transform:scale(.98)}
+.ag{display:flex;align-items:flex-start;gap:8px;margin-top:18px;cursor:pointer;user-select:none}
+.cb{width:16px;height:16px;border:1px solid var(--gy);border-radius:3px;display:flex;
+align-items:center;justify-content:center;margin-top:1px;font-size:10px;color:var(--wh);
+background:transparent;flex-shrink:0}
+.cb.ck{background:var(--rd);border-color:var(--rd)}
+.at{font-size:12px;color:var(--gy);line-height:1.6}
+.at .lk{color:var(--rd);text-decoration:underline}
+#mp{background:var(--bg)}
+.ms{padding:60px 20px 30px}
+.mh{padding:24px 0 16px;text-align:center}
+.mt{font-size:24px;font-weight:500;display:block;color:var(--bk);letter-spacing:4px;font-family:'Songti SC',serif;line-height:1.3}
+.mtl{width:30px;height:1px;background:var(--rd);margin:14px auto}
+.msu{font-size:12px;color:var(--gy);display:block;letter-spacing:1.5px;line-height:1.6}
+.ic2{background:var(--wh);border-radius:var(--rc);padding:18px;box-shadow:var(--sh);margin-top:20px}
+.ta{width:100%;min-height:80px;border:none;outline:none;font-size:14px;line-height:1.8;resize:none;
+color:var(--bk);font-family:inherit;letter-spacing:.5px}
+.ta::placeholder{color:#B5A89B}
+.ib{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px solid var(--bdl)}
+.cc{font-size:11px;color:#B5A89B}
+.bv{display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--r);background:#FAF5EF;
+color:var(--gd);font-size:11px;border:none;cursor:pointer;font-family:inherit;letter-spacing:1px}
+.bv svg{fill:currentColor}
+.bv.rec{background:var(--rd);color:var(--wh);animation:p 1s infinite}
+@keyframes p{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.bs{width:100%;height:48px;background:var(--rd2);color:var(--wh);border:none;border-radius:var(--r);
+font-size:15px;font-weight:500;letter-spacing:4px;cursor:pointer;margin-top:18px;font-family:inherit;
+display:flex;align-items:center;justify-content:center;gap:8px;transition:background .3s}
+.bs:hover:not(:disabled){background:var(--rd)}
+.bs:disabled{background:#E5DDD2!important;color:#B5A89B!important;cursor:default}
+.bs:not(:disabled):active{transform:scale(.98)}
+.ld{display:inline-flex;gap:4px}
+.ld span{width:5px;height:5px;background:var(--wh);border-radius:50%;animation:d 1s infinite}
+.ld span:nth-child(2){animation-delay:.15s}.ld span:nth-child(3){animation-delay:.3s}
+@keyframes d{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+.vo{position:fixed;inset:0;background:rgba(29,29,29,.55);display:flex;align-items:center;
+justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .25s}
+.vo.show{opacity:1;pointer-events:auto}
+.vm{width:180px;height:180px;background:rgba(29,29,29,.9);border-radius:var(--rc);display:flex;
+flex-direction:column;align-items:center;justify-content:center;gap:18px}
+.vw{display:flex;align-items:flex-end;gap:7px;height:50px}
+.vw .b{width:5px;background:var(--gd);border-radius:3px;animation:w .7s ease-in-out infinite alternate}
+.vw .b:nth-child(2){animation-delay:.1s}.vw .b:nth-child(3){animation-delay:.2s}
+.vw .b:nth-child(4){animation-delay:.3s}.vw .b:nth-child(5){animation-delay:.15s}
+@keyframes w{from{height:12px}to{height:44px}}
+.vl{color:var(--wh);font-size:13px;letter-spacing:2px}
+.rs{margin-top:24px;animation:fu .5s}
+@keyframes fu{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.rtw{text-align:center;margin-bottom:16px}
+.rt{font-size:18px;font-weight:500;color:var(--bk);letter-spacing:3px;font-family:'Songti SC',serif}
+.rd2{width:30px;height:1px;background:var(--rd);margin:10px auto}
+.rde{font-size:12px;color:var(--gy);display:block;letter-spacing:1px;text-align:center}
+.sw{position:relative;margin:0 -2px}
+.sml,.smr{position:absolute;top:0;bottom:0;width:24px;pointer-events:none;z-index:5;transition:opacity .3s}
+.sml{left:0;background:linear-gradient(90deg,var(--bg) 0%,rgba(242,240,240,0) 100%)}
+.smr{right:0;background:linear-gradient(270deg,var(--bg) 0%,rgba(242,240,240,0) 100%)}
+.sml.hd,.smr.hd{opacity:0}
+.ps{display:flex;gap:14px;overflow-x:auto;padding:18px 0 8px;scroll-snap-type:x mandatory;
+-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+.ps::-webkit-scrollbar{display:none}
+.sm{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding:0 4px}
+.sc{font-size:12px;color:var(--gy);letter-spacing:1px}
+.sc .cu{color:var(--bk);font-weight:600;font-size:15px;font-family:'Songti SC',serif}
+.sd{display:flex;gap:5px}
+.sd .dt{width:5px;height:5px;border-radius:50%;background:var(--bd);transition:all .3s;cursor:pointer}
+.sd .dt.ac{width:16px;border-radius:3px;background:var(--rd)}
+.sh2{text-align:center;font-size:11px;color:#B5A89B;margin-top:10px;letter-spacing:1px;
+display:flex;align-items:center;justify-content:center;gap:6px}
+.sh2 .ar{animation:sh 1.5s ease-in-out infinite}
+@keyframes sh{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+.pc{flex-shrink:0;width:178px;background:var(--wh);border-radius:var(--rc);overflow:hidden;
+box-shadow:var(--sh);scroll-snap-align:start;cursor:pointer;transition:box-shadow .3s,transform .2s}
+.pc:hover{box-shadow:0 8px 30px rgba(29,29,29,.12);transform:translateY(-2px)}
+.ciw{position:relative;width:178px;height:178px;background:var(--bg);display:flex;
+align-items:center;justify-content:center;overflow:hidden;cursor:zoom-in}
+.ciw.lo::before{content:'';position:absolute;inset:0;
+background:linear-gradient(90deg,#EBE7E2 0%,#F5F1ED 50%,#EBE7E2 100%);
+background-size:200% 100%;animation:sm 1.4s ease-in-out infinite;z-index:1}
+@keyframes sm{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.ci{width:100%;height:100%;object-fit:contain;padding:14px;opacity:0;
+transition:opacity .4s,transform .4s;position:relative;z-index:2}
+.ci.ld2{opacity:1}
+.pc:hover .ci.ld2{transform:scale(1.05)}
+.ph{display:none;font-size:11px;color:var(--gd);font-family:'Songti SC',serif;letter-spacing:1px;
+text-align:center;padding:20px;position:relative;z-index:2}
+.ph .pf{width:80px;height:80px;border:1px solid var(--gd);border-radius:8px;margin:0 auto 10px;
+display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500}
+.ci.fl{display:none}
+.ci.fl~.ph{display:block}
+.ciw.lo .ph{display:none!important}
+.ct{position:absolute;top:8px;left:8px;background:var(--rd);color:var(--wh);font-size:10px;
+padding:3px 8px;border-radius:3px;z-index:3;letter-spacing:1px;font-weight:500}
+.zh{position:absolute;bottom:8px;right:8px;width:24px;height:24px;background:rgba(29,29,29,.7);
+border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:3;
+opacity:0;transition:opacity .3s}
+.zh svg{fill:var(--wh)}
+.pc:hover .zh{opacity:1}
+.ci2{padding:14px 14px 16px;border-top:1px solid var(--bdl)}
+.cn{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+display:block;color:var(--bk);letter-spacing:.5px}
+.cm{font-size:11px;color:var(--gd);margin-top:4px;white-space:nowrap;overflow:hidden;
+text-overflow:ellipsis;display:block;letter-spacing:1px}
+.cme{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.cs{font-size:10px;color:#B5A89B;font-family:'Times New Roman',serif}
+.cp{font-size:17px;font-weight:600;color:var(--rd);font-family:'Songti SC','Times New Roman',serif}
+.csr{margin-top:8px}
+.st{display:inline-block;font-size:10px;color:var(--gy);background:var(--bg);padding:3px 10px;border-radius:3px;letter-spacing:1px}
+.cc2{background:var(--wh);border-radius:var(--rc);padding:20px;margin-top:24px;border-left:3px solid var(--rd)}
+.ctt{font-size:14px;font-weight:500;color:var(--bk);display:block;letter-spacing:3px;margin-bottom:10px;font-family:'Songti SC',serif}
+.ctx{font-size:13px;color:var(--gy);line-height:1.9;display:block;letter-spacing:.5px}
+.br{display:block;width:100%;height:44px;margin-top:20px;background:transparent;border:1px solid var(--rd);
+border-radius:var(--r);color:var(--rd);font-size:14px;cursor:pointer;font-family:inherit;
+letter-spacing:3px;font-weight:500;transition:all .3s}
+.br:hover{background:var(--rd);color:var(--wh)}
+.ts2{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.85);
+background:rgba(29,29,29,.92);color:var(--wh);padding:12px 26px;border-radius:var(--r);
+font-size:13px;z-index:2000;opacity:0;pointer-events:none;transition:all .3s;letter-spacing:1px}
+.ts2.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.hmo{position:fixed;inset:0;background:rgba(29,29,29,.6);z-index:3000;display:flex;
+align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s}
+.hmo.show{opacity:1;pointer-events:auto}
+.hm{background:var(--wh);border-radius:var(--rc);padding:28px 24px;max-width:340px;width:100%;
+max-height:80vh;overflow-y:auto;transform:scale(.9);transition:transform .3s}
+.hmo.show .hm{transform:scale(1)}
+.hm h3{font-size:16px;font-weight:500;margin-bottom:14px;color:var(--bk);letter-spacing:3px;
+text-align:center;font-family:'Songti SC',serif}
+.hm h3::after{content:'';display:block;width:30px;height:1px;background:var(--rd);margin:10px auto 0}
+.hm h4{font-size:13px;font-weight:500;margin:16px 0 8px;color:var(--bk);letter-spacing:1.5px}
+.hm ol{padding-left:20px;font-size:13px;line-height:1.8;color:var(--gy)}
+.hm code{background:var(--bg);padding:2px 6px;border-radius:3px;font-family:monospace;font-size:11.5px;color:var(--rd)}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}
+.sg span{font-size:10.5px;padding:5px 2px;background:var(--bg);color:var(--gy);text-align:center;
+border-radius:3px;font-family:'Times New Roman',monospace}
+.cl{width:100%;height:44px;margin-top:20px;background:var(--rd2);color:var(--wh);border:none;
+border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;letter-spacing:3px}
+.tb{background:var(--bg);border-left:2px solid var(--rd);padding:10px 12px;font-size:12px;
+color:var(--gy);margin-top:10px;border-radius:3px;line-height:1.6}
+.lb{position:fixed;inset:0;background:rgba(29,29,29,.95);z-index:4000;display:flex;
+flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;
+transition:opacity .3s;padding:20px}
+.lb.show{opacity:1;pointer-events:auto}
+.lbc{position:absolute;top:20px;right:20px;width:36px;height:36px;border-radius:50%;
+background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:var(--wh);
+font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;font-family:inherit}
+.lbct{max-width:340px;width:100%;display:flex;flex-direction:column;align-items:center;gap:18px}
+.lbi{width:300px;height:300px;background:var(--bg);border-radius:var(--r);display:flex;
+align-items:center;justify-content:center;overflow:hidden;position:relative}
+.lbim{width:100%;height:100%;object-fit:contain;padding:20px}
+.lbn{display:flex;align-items:center;gap:10px}
+.lbb{width:36px;height:36px;border-radius:var(--r);background:rgba(255,255,255,.1);
+border:1px solid rgba(255,255,255,.2);color:var(--wh);cursor:pointer;font-size:18px;
+display:flex;align-items:center;justify-content:center;font-family:inherit}
+.lbb:disabled{opacity:.3;cursor:default}
+.lbcn{color:var(--gd);font-size:13px;font-family:'Times New Roman',serif;letter-spacing:2px;min-width:70px;text-align:center}
+.lbt{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;max-width:300px}
+.lbth{width:46px;height:46px;border-radius:6px;border:1px solid rgba(255,255,255,.2);
+background:var(--bg);overflow:hidden;cursor:pointer;flex-shrink:0}
+.lbth img{width:100%;height:100%;object-fit:contain;padding:4px}
+.lbth.ac{border-color:var(--gd);box-shadow:0 0 0 2px rgba(183,142,108,.3)}
+.lbf{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);
+padding:14px 18px;width:100%;max-width:300px;color:var(--wh)}
+.lbnm{font-size:14px;font-weight:500;color:var(--wh);display:block}
+.lbme{font-size:12px;color:var(--gd);margin-top:6px;display:block}
+.lbm2{display:flex;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.1)}
+.lbsk{font-size:11px;color:rgba(255,255,255,.6);font-family:'Times New Roman',serif}
+.lbp{font-size:18px;color:var(--gd);font-weight:600;font-family:'Songti SC','Times New Roman',serif}
+@media(max-width:430px){body{background:var(--bg)}.frame{width:100%;height:100vh;margin:0;border-radius:0;
+box-shadow:none}.di{display:none}.sb{height:44px}}</style>
+</head>
+<body>
+<div class="frame">
+<div class="sb" id="sb"><span class="t" id="st">9:41</span><div class="ic"><span>●●●●</span><span>WiFi</span><span>100%</span></div></div>
+<div class="di"></div>
+<div class="page" id="lp">
+<div class="lh"><img class="logo" src="./logo.png" alt="CHOW TAI FOOK" onerror="this.style.display='none'"><div class="ldl"></div><div class="tag">心 语 匹 配</div></div>
+<div class="card">
+<div class="ft">欢 迎 登 录</div>
+<button class="bw" onclick="wxL()"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M8.69 2.19C3.89 2.19 0 5.48 0 9.53c0 2.21 1.17 4.2 3 5.55a.59.59 0 01.21.67l-.39 1.48c-.02.07-.05.14-.05.21 0 .16.13.3.29.3a.33.33 0 00.17-.06l1.9-1.11a.86.86 0 01.72-.1 10.16 10.16 0 002.84.4c.28 0 .54-.02.81-.05-.86-2.58.16-4.97 1.93-6.45 1.7-1.41 3.88-1.98 5.85-1.84-.58-3.58-4.2-6.35-8.6-6.35zM5.79 5.99c.64 0 1.16.53 1.16 1.18a1.17 1.17 0 01-2.33 0c0-.65.52-1.18 1.17-1.18zm5.81 0c.64 0 1.16.53 1.16 1.18a1.17 1.17 0 01-2.33 0c0-.65.52-1.18 1.17-1.18z"/></svg><span>微信手机号快捷登录</span></button>
+<div class="dv"><div class="ln"></div><span>或手动输入手机号</span><div class="ln"></div></div>
+<div class="ig"><label class="il">手 机 号</label><input class="if" id="ph" type="tel" maxlength="11" placeholder="请输入手机号" oninput="vl()"></div>
+<div class="ig"><label class="il">验 证 码</label><div class="cr"><input class="if" id="cd" type="tel" maxlength="6" placeholder="请输入验证码" oninput="vl()"><button class="bc" id="bc" onclick="sc()">获取验证码</button></div></div>
+<button class="bl" id="bl" disabled onclick="mL()">登 录</button>
+<div class="ag" onclick="ta()"><div class="cb" id="cb"></div><div class="at">我已阅读并同意 <span class="lk">《用户服务协议》</span>和<span class="lk">《隐私政策》</span></div></div>
+</div>
+</div>
+<div class="page hidden" id="mp">
+<div class="nav">心 语 匹 配<button class="hbn" onclick="sH()">?</button></div>
+<div class="ms">
+<div class="mh"><span class="mt">说 出 你 的 心 情</span><div class="mtl"></div><span class="msu">输入一段话，为你匹配专属款式组合</span></div>
+<div class="ic2">
+<textarea class="ta" id="ti" maxlength="200" placeholder="例如：好事发生、一路生花、天天开心..." oninput="oi()"></textarea>
+<div class="ib"><span class="cc" id="cc">0 / 200</span>
+<button class="bv" id="bv" onmousedown="sv()" onmouseup="ev()" ontouchstart="sv()" ontouchend="ev()"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg><span id="bt">按住说话</span></button>
+</div>
+</div>
+<button class="bs" id="bs" disabled onclick="dS()"><span>为 我 匹 配 款 式</span></button>
+<div id="rc"></div>
+</div>
+</div>
+<div class="vo" id="vo"><div class="vm"><div class="vw"><div class="b"></div><div class="b"></div><div class="b"></div><div class="b"></div><div class="b"></div></div><div class="vl">正 在 聆 听</div></div></div>
+<div class="ts2" id="ts"></div>
+<div class="hmo" id="hmo" onclick="if(event.target===this)cH()">
+<div class="hm">
+<h3>真实产品图使用说明</h3>
+<h4>配 置 步 骤</h4>
+<ol><li>在 HTML 同级目录创建 <code>images</code> 文件夹</li>
+<li>将本地产品图拷贝到该文件夹</li>
+<li>命名格式：<code>PW-0-R&#123;SKU&#125;-SA01.png</code></li>
+<li>支持多角度：<code>SA01</code> / <code>SA02</code> / <code>SA03</code>...</li></ol>
+<div class="tb">系统会按顺序尝试 .png → .jpg → .jpeg → .webp 扩展名</div>
+<h4>涉 及 的 40 个 SKU</h4>
+<div class="sg"><span>R37869</span><span>R36850</span><span>R39965</span><span>R33385</span><span>R39950</span><span>R15397</span><span>R15396</span><span>R36237</span><span>R34866</span><span>R39629</span><span>R39957</span><span>R34941</span><span>R39952</span><span>R36204</span><span>R37207</span><span>R36231</span><span>R34174</span><span>R36259</span><span>R38624</span><span>R38387</span><span>R39958</span><span>R37954</span><span>R33966</span><span>R37626</span><span>R36070</span><span>R24463</span><span>R37999</span><span>R39677</span><span>R33846</span><span>R37857</span><span>R38747</span><span>R36894</span><span>R36876</span><span>R39201</span><span>R39879</span><span>R37325</span><span>R37326</span><span>R37329</span><span>R37331</span><span>R37327</span></div>
+<button class="cl" onclick="cH()">我 知 道 了</button>
+</div>
+</div>
+<div class="lb" id="lb">
+<button class="lbc" onclick="cL()">×</button>
+<div class="lbct">
+<div class="lbi"><img class="lbim" id="lbim" alt=""></div>
+<div class="lbn"><button class="lbb" id="lbp" onclick="lN(-1)">‹</button><span class="lbcn" id="lbcn">1 / 1</span><button class="lbb" id="lbnx" onclick="lN(1)">›</button></div>
+<div class="lbt" id="lbt"></div>
+<div class="lbf"><span class="lbnm" id="lbnm"></span><span class="lbme" id="lbme"></span><div class="lbm2"><span class="lbsk" id="lbsk"></span><span class="lbp" id="lbpr"></span></div></div>
+</div>
+</div>
+</div>
+<script>
+const LB="./images/",EX=["png","jpg","jpeg","webp"],MV=10;
+function gI(s,v,e){return LB+"PW-0-R"+s+"-SA"+String((v||0)+1).padStart(2,"0")+"."+EX[e||0];}
+const ST={ag:false,cd:0,tm:null,rc:false,sg:false,rg:null,li:[],lc:0};
+function tt(m,d){const t=document.getElementById("ts");t.textContent=m;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},d||2000);}
+function tk(){const n=new Date();document.getElementById("st").textContent=n.getHours()+":"+String(n.getMinutes()).padStart(2,"0");}
+tk();setInterval(tk,30000);
+function ta(){ST.ag=!ST.ag;const c=document.getElementById("cb");if(ST.ag){c.classList.add("ck");c.textContent="\u2713";}else{c.classList.remove("ck");c.textContent="";}vl();}
+function vl(){const p=document.getElementById("ph").value.trim(),c=document.getElementById("cd").value.trim();document.getElementById("bl").disabled=!(p.length===11&&c.length>=4&&ST.ag);}
+function sc(){const p=document.getElementById("ph").value.trim();if(!/^1\d{10}$/.test(p)){tt("请输入正确的手机号");return;}ST.cd=60;const b=document.getElementById("bc");b.disabled=true;b.textContent="60s";tt("验证码已发送");ST.tm=setInterval(function(){ST.cd--;if(ST.cd<=0){clearInterval(ST.tm);b.disabled=false;b.textContent="获取验证码";}else b.textContent=ST.cd+"s";},1000);}
+function wxL(){if(!ST.ag){tt("请先同意服务协议");return;}tt("微信授权中");setTimeout(gM,1200);}
+function mL(){tt("登录中");setTimeout(gM,1000);}
+function gM(){document.getElementById("lp").classList.add("out");document.getElementById("mp").classList.remove("hidden");document.getElementById("sb").style.color="var(--bk)";setTimeout(function(){document.getElementById("lp").style.display="none";},500);}
+function oi(){const t=document.getElementById("ti");document.getElementById("cc").textContent=t.value.length+" / 200";document.getElementById("bs").disabled=!t.value.trim();}
+function iS(){const S=window.SpeechRecognition||window.webkitSpeechRecognition;if(S){ST.rg=new S();ST.rg.lang="zh-CN";ST.rg.continuous=false;ST.rg.interimResults=false;ST.rg.onresult=function(e){const t=e.results[0][0].transcript,a=document.getElementById("ti");a.value=((a.value?a.value+" ":"")+t).slice(0,200);oi();};ST.rg.onerror=function(){eV();tt("语音识别失败");};ST.rg.onend=eV;}}
+function sv(){if(ST.rc)return;ST.rc=true;document.getElementById("vo").classList.add("show");document.getElementById("bv").classList.add("rec");document.getElementById("bt").textContent="松开结束";if(ST.rg){try{ST.rg.start();}catch(e){}}else{ST.vt=setTimeout(function(){const ph=["好事发生","一帆风顺","心想事成","花开富贵","甜蜜恋爱","发财","平安喜乐","升职加薪"],a=document.getElementById("ti");a.value=((a.value?a.value+" ":"")+ph[Math.floor(Math.random()*ph.length)]).slice(0,200);oi();eV();},2500);}}
+function ev(){if(!ST.rc)return;if(ST.rg){try{ST.rg.stop();}catch(e){}}if(ST.vt)clearTimeout(ST.vt);eV();}
+function eV(){ST.rc=false;document.getElementById("vo").classList.remove("show");document.getElementById("bv").classList.remove("rec");document.getElementById("bt").textContent="按住说话";}
+function iE(g){const s=g.dataset.sku,v=parseInt(g.dataset.v||"0",10);let e=parseInt(g.dataset.e||"0",10)+1;if(e<EX.length){g.dataset.e=e;g.src=gI(s,v,e);}else{g.classList.add("fl");if(g.parentElement)g.parentElement.classList.remove("lo");}}
+function iL(g){g.classList.add("ld2");if(g.parentElement)g.parentElement.classList.remove("lo");}
+function sH(){document.getElementById("hmo").classList.add("show");}
+function cH(){document.getElementById("hmo").classList.remove("show");}
+function pI(u){return new Promise(function(r){const i=new Image();i.onload=function(){r(true);};i.onerror=function(){r(false);};i.src=u;});}
+async function pA(s){const f=[];for(let v=0;v<MV;v++){let o=null;for(let e=0;e<EX.length;e++){const u=gI(s,v,e);if(await pI(u)){o=u;break;}}if(o)f.push(o);else break;}return f;}
+async function oL(pj){const p=JSON.parse(decodeURIComponent(pj));ST.lc=0;document.getElementById("lb").classList.add("show");document.getElementById("lbnm").textContent=p.name;document.getElementById("lbme").textContent="寓意："+p.meaning;document.getElementById("lbsk").textContent=p.sku;document.getElementById("lbpr").textContent="\u00a5"+p.price;const m=document.getElementById("lbim");m.src="";document.getElementById("lbcn").textContent="加载中";document.getElementById("lbt").innerHTML="";const ig=await pA(p.id);if(ig.length===0){m.src="data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"200\" height=\"200\"><rect width=\"200\" height=\"200\" fill=\"%23F2F0F0\"/><text x=\"100\" y=\"100\" font-size=\"14\" fill=\"%23B78E6C\" text-anchor=\"middle\">"+encodeURIComponent(p.sku)+"</text><text x=\"100\" y=\"125\" font-size=\"11\" fill=\"%23796E65\" text-anchor=\"middle\">暂无图片</text></svg>";document.getElementById("lbcn").textContent="0 / 0";document.getElementById("lbp").disabled=true;document.getElementById("lbnx").disabled=true;return;}ST.li=ig;rL();}
+function rL(){const t=ST.li.length,c=ST.lc;document.getElementById("lbim").src=ST.li[c];document.getElementById("lbcn").textContent=(c+1)+" / "+t;document.getElementById("lbp").disabled=c===0;document.getElementById("lbnx").disabled=c===t-1;let h="";for(let i=0;i<t;i++)h+="<div class=\"lbth"+(i===c?" ac":"")+"\" onclick=\"lG("+i+")\"><img src=\""+ST.li[i]+"\" alt=\"\"></div>";document.getElementById("lbt").innerHTML=h;}
+function lN(d){const n=ST.lc+d;if(n<0||n>=ST.li.length)return;ST.lc=n;rL();}
+function lG(i){ST.lc=i;rL();}
+function cL(){document.getElementById("lb").classList.remove("show");ST.li=[];ST.lc=0;}
+document.addEventListener("keydown",function(e){const l=document.getElementById("lb");if(!l.classList.contains("show"))return;if(e.key==="Escape")cL();else if(e.key==="ArrowLeft")lN(-1);else if(e.key==="ArrowRight")lN(1);});
+document.getElementById("lb").addEventListener("click",function(e){if(e.target===this)cL();});
+const PD=[{"k": "財運亨通", "cm": "貔貅招財納福，財富寶寶招攬財氣，發字花生好事發生，招財貓旺運招財，富字錢幣象徵財運亨通。", "p": [{"id": 37869, "name": "招財納福貔貅轉運珠", "meaning": "招財納福", "sku": "SKU R37869", "price": "2,180", "series": "貔貅系列", "tag": "熱銷"}, {"id": 36850, "name": "財富寶寶發財轉運珠", "meaning": "財氣滾滾", "sku": "SKU R36850", "price": "1,480", "series": "寶寶系列", "tag": ""}, {"id": 39965, "name": "友禮發字花生轉運珠", "meaning": "好事發生", "sku": "SKU R39965", "price": "1,580", "series": "友禮系列", "tag": "新品"}, {"id": 33385, "name": "元寶招財貓掛墜", "meaning": "元寶招財", "sku": "SKU R33385", "price": "1,880", "series": "招財貓系列", "tag": ""}, {"id": 39950, "name": "友禮富字錢幣掛墜", "meaning": "財運亨通", "sku": "SKU R39950", "price": "1,680", "series": "友禮系列", "tag": ""}]}, {"k": "平安健康", "cm": "平安寶寶庇佑平安，健康寶寶福澤健康，葫蘆福祿雙至，平安喜樂字字祝福，如意萬事順遂。", "p": [{"id": 15397, "name": "新形象平安寶寶轉運珠", "meaning": "平安庇佑", "sku": "SKU R15397", "price": "1,380", "series": "寶寶系列", "tag": "熱銷"}, {"id": 15396, "name": "新形象健康寶寶轉運珠", "meaning": "健康福澤", "sku": "SKU R15396", "price": "1,380", "series": "寶寶系列", "tag": ""}, {"id": 36237, "name": "鎏彩平安葫蘆轉運珠", "meaning": "福祿平安", "sku": "SKU R36237", "price": "1,580", "series": "葫蘆系列", "tag": ""}, {"id": 34866, "name": "平安喜樂轉運珠", "meaning": "平安喜樂", "sku": "SKU R34866", "price": "1,480", "series": "平安字系列", "tag": "經典"}, {"id": 39629, "name": "鎏彩如意吊墜", "meaning": "萬事如意", "sku": "SKU R39629", "price": "1,880", "series": "如意系列", "tag": "新品"}]}, {"k": "好事發生", "cm": "好運連連御守福運加身，四葉草幸運降臨，吉字大吉大利，吉祥福星高照，好運字款。", "p": [{"id": 39957, "name": "友禮好運連連御守掛墜", "meaning": "好運連連", "sku": "SKU R39957", "price": "1,280", "series": "友禮御守", "tag": "熱銷"}, {"id": 34941, "name": "四葉草鎏彩掛墜", "meaning": "幸運降臨", "sku": "SKU R34941", "price": "1,580", "series": "自然系列", "tag": ""}, {"id": 39952, "name": "友禮吉字掛墜", "meaning": "大吉大利", "sku": "SKU R39952", "price": "1,480", "series": "友禮系列", "tag": "新品"}, {"id": 36204, "name": "鎏彩吉祥掛墜", "meaning": "福星高照", "sku": "SKU R36204", "price": "1,680", "series": "吉祥字系列", "tag": ""}, {"id": 37207, "name": "好運鎏彩轉運珠", "meaning": "好運常伴", "sku": "SKU R37207", "price": "1,380", "series": "字款系列", "tag": ""}]}, {"k": "甜蜜愛情", "cm": "forever愛心永恆，米奇米妮CP甜蜜，愛心鎏彩心心相印，貝爾玫瑰花戒指浪漫，抱心小熊維尼溫暖。", "p": [{"id": 36231, "name": "forever愛心轉運珠", "meaning": "永恆之愛", "sku": "SKU R36231", "price": "1,680", "series": "愛情系列", "tag": "限定"}, {"id": 34174, "name": "米奇米妮CP牌掛墜", "meaning": "甜蜜雙人", "sku": "SKU R34174", "price": "1,880", "series": "迪士尼系列", "tag": ""}, {"id": 36259, "name": "愛心鎏彩掛墜", "meaning": "心心相印", "sku": "SKU R36259", "price": "1,580", "series": "經典愛情", "tag": ""}, {"id": 38624, "name": "貝爾公主玫瑰花珍珠戒指", "meaning": "浪漫公主", "sku": "SKU R38624", "price": "2,580", "series": "迪士尼公主", "tag": "限量"}, {"id": 38387, "name": "抱心小熊維尼掛墜", "meaning": "溫暖擁抱", "sku": "SKU R38387", "price": "1,780", "series": "迪士尼系列", "tag": "新品"}]}, {"k": "升職學業", "cm": "升職加薪御守職場順遂，麒麟報喜訊頻傳，前程似錦，屋脊獸龍騰飛躍，毛筆學業有成。", "p": [{"id": 39958, "name": "友禮升職加薪御守掛墜", "meaning": "職場順遂", "sku": "SKU R39958", "price": "1,380", "series": "友禮御守", "tag": "熱銷"}, {"id": 37954, "name": "鎏彩麒麟報轉運珠", "meaning": "喜訊頻傳", "sku": "SKU R37954", "price": "1,880", "series": "神獸系列", "tag": ""}, {"id": 33966, "name": "抓周前程似錦掛墜", "meaning": "前程似錦", "sku": "SKU R33966", "price": "1,680", "series": "抓周系列", "tag": ""}, {"id": 37626, "name": "故宮屋脊獸龍轉運珠", "meaning": "龍騰飛躍", "sku": "SKU R37626", "price": "2,180", "series": "故宮系列", "tag": "限量"}, {"id": 36070, "name": "鎏彩毛筆掛墜", "meaning": "學業有成", "sku": "SKU R36070", "price": "1,280", "series": "文化系列", "tag": ""}]}, {"k": "守護辟邪", "cm": "六字真言佛祖護佑，貔貅鎮宅辟邪，定风珠化解煞氣，護身虎威武守護，無盡的結福澤綿長。", "p": [{"id": 24463, "name": "六字真言轉運珠", "meaning": "佛祖護佑", "sku": "SKU R24463", "price": "1,580", "series": "六字真言", "tag": "經典"}, {"id": 37999, "name": "貔貅轉運珠", "meaning": "鎮宅辟邪", "sku": "SKU R37999", "price": "1,980", "series": "神獸系列", "tag": "熱銷"}, {"id": 39677, "name": "黑曜岩定风珠手鏈", "meaning": "化解煞氣", "sku": "SKU R39677", "price": "2,380", "series": "玄學系列", "tag": "新品"}, {"id": 33846, "name": "鎏彩護身虎掛墜", "meaning": "威武守護", "sku": "SKU R33846", "price": "1,880", "series": "神獸系列", "tag": ""}, {"id": 37857, "name": "電黑無盡的結轉運珠", "meaning": "福澤綿長", "sku": "SKU R37857", "price": "1,480", "series": "文化系列", "tag": ""}]}, {"k": "可愛萌寵", "cm": "烏薩奇治癒萌寵，坐坐熊軟萌可愛，奶龍穩字穩穩幸福，紫悅夢幻馬蹄，吉伊溫柔陪伴。", "p": [{"id": 38747, "name": "烏薩奇金章", "meaning": "治癒萌寵", "sku": "SKU R38747", "price": "1,580", "series": "吉伊卡哇伊", "tag": "人氣"}, {"id": 36894, "name": "鎏彩坐坐熊轉運珠", "meaning": "軟萌可愛", "sku": "SKU R36894", "price": "1,380", "series": "萌寵系列", "tag": ""}, {"id": 36876, "name": "鎏彩奶龍穩字吊墜", "meaning": "穩穩幸福", "sku": "SKU R36876", "price": "1,680", "series": "奶龍系列", "tag": "新品"}, {"id": 39201, "name": "鎏彩紫悅掛墜", "meaning": "夢幻馬蹄", "sku": "SKU R39201", "price": "1,580", "series": "小馬寶莉", "tag": ""}, {"id": 39879, "name": "吉伊吊墜", "meaning": "溫柔陪伴", "sku": "SKU R39879", "price": "1,480", "series": "吉伊卡哇伊", "tag": "熱銷"}]}, {"k": "婚嫁喜事", "cm": "尺子量度終身，鏡子相愛長久，算盤精打細算，鞋子白頭偕老，梳子執子之手。", "p": [{"id": 37325, "name": "婚慶九寶尺子掛墜", "meaning": "量度終身", "sku": "SKU R37325", "price": "1,580", "series": "婚慶九寶", "tag": "套裝"}, {"id": 37326, "name": "婚慶九寶鏡子轉運珠", "meaning": "相愛長久", "sku": "SKU R37326", "price": "1,580", "series": "婚慶九寶", "tag": "套裝"}, {"id": 37329, "name": "婚慶九寶算盤轉運珠", "meaning": "精打細算", "sku": "SKU R37329", "price": "1,580", "series": "婚慶九寶", "tag": "套裝"}, {"id": 37331, "name": "婚慶九寶鞋子轉運珠", "meaning": "白頭偕老", "sku": "SKU R37331", "price": "1,580", "series": "婚慶九寶", "tag": "套裝"}, {"id": 37327, "name": "婚慶九寶梳子轉運珠", "meaning": "執子之手", "sku": "SKU R37327", "price": "1,580", "series": "婚慶九寶", "tag": "套裝"}]}],KM={"財": 0, "财": 0, "發財": 0, "发财": 0, "招財": 0, "招财": 0, "富": 0, "錢": 0, "钱": 0, "旺": 0, "暴富": 0, "元寶": 0, "平安": 1, "健康": 1, "葫蘆": 1, "葫芦": 1, "喜樂": 1, "喜乐": 1, "如意": 1, "順遂": 1, "安康": 1, "福祿": 1, "好運": 2, "好运": 2, "好事": 2, "發生": 2, "发生": 2, "吉祥": 2, "幸運": 2, "幸运": 2, "開心": 2, "开心": 2, "快樂": 2, "快乐": 2, "四葉草": 2, "四叶草": 2, "愛": 3, "爱": 3, "戀": 3, "恋": 3, "甜蜜": 3, "浪漫": 3, "情人": 3, "喜歡": 3, "喜欢": 3, "告白": 3, "迪士尼": 3, "公主": 3, "玫瑰": 3, "維尼": 3, "米奇": 3, "米妮": 3, "升職": 4, "升职": 4, "加薪": 4, "事業": 4, "事业": 4, "學": 4, "学": 4, "考": 4, "讀書": 4, "读书": 4, "上岸": 4, "前程": 4, "麒麟": 4, "故宮": 4, "故宫": 4, "龍": 4, "龙": 4, "守護": 5, "守护": 5, "辟邪": 5, "六字真言": 5, "護身": 5, "护身": 5, "佛": 5, "虎": 5, "鎮宅": 5, "镇宅": 5, "可愛": 6, "可爱": 6, "萌": 6, "卡通": 6, "烏薩奇": 6, "乌萨奇": 6, "奶龍": 6, "奶龙": 6, "吉伊": 6, "紫悅": 6, "紫悦": 6, "卡哇伊": 6, "治癒": 6, "治愈": 6, "結婚": 7, "结婚": 7, "婚禮": 7, "婚礼": 7, "婚慶": 7, "婚庆": 7, "嫁": 7, "娶": 7, "新娘": 7, "喜事": 7, "百年好合": 7, "白頭偕老": 7, "夫妻": 7, "婚": 7};
+function mP(t){const s=[0,0,0,0,0,0,0,0];for(const k in KM)if(t.indexOf(k)!==-1)s[KM[k]]+=1;const m=Math.max.apply(null,s);if(m===0)return PD[Math.floor(Math.random()*PD.length)];return PD[s.indexOf(m)];}
+const ZS='<svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>';
+function dS(){const t=document.getElementById("ti").value.trim();if(!t||ST.sg)return;ST.sg=true;const b=document.getElementById("bs");b.disabled=true;b.innerHTML='匹配中 <span class="ld"><span></span><span></span><span></span></span>';document.getElementById("rc").innerHTML="";setTimeout(function(){const r=mP(t);rR(r);ST.sg=false;b.disabled=false;b.innerHTML="<span>为 我 匹 配 款 式</span>";},1800);}
+function rR(r){
+  const c=document.getElementById("rc"),T=r.p.length;
+  let ch="";
+  for(let i=0;i<T;i++){
+    const p=r.p[i];
+    const tg=p.tag?'<div class="ct">'+p.tag+"</div>":"";
+    const pj=encodeURIComponent(JSON.stringify(p));
+    const src=gI(p.id,0,0);
+    const imgTag='<img class="ci" src="'+src+'" data-sku="'+p.id+'" data-v="0" data-e="0" alt="'+p.name+'" onerror="iE(this)" onload="iL(this)" loading="lazy">';
+    const card='<div class="pc"><div class="ciw lo" onclick="oL(\''+pj+'\')">'+imgTag+'<div class="ph"><div class="pf">CTF</div>'+p.sku+'</div>'+tg+'<div class="zh">'+ZS+'</div></div><div class="ci2"><span class="cn">'+p.name+'</span><span class="cm">寓意：'+p.meaning+'</span><div class="cme"><span class="cs">'+p.sku+'</span><span class="cp">\u00a5'+p.price+'</span></div><div class="csr"><span class="st">'+p.series+'</span></div></div></div>';
+    ch+=card;
+  }
+  let dh="";
+  for(let i=0;i<T;i++)dh+='<span class="dt'+(i===0?" ac":"")+'" data-i="'+i+'"></span>';
+  c.innerHTML='<div class="rs"><div class="rtw"><span class="rt">为 你 推 荐 的 款 式</span><div class="rd2"></div><span class="rde">基于「'+r.k+'」为你匹配 \u00b7 共 '+T+' 款</span></div><div class="sw"><div class="sml hd" id="mL"></div><div class="ps" id="ps">'+ch+'</div><div class="smr" id="mR"></div></div><div class="sm"><span class="sc"><span class="cu" id="cu">1</span> / '+T+'</span><div class="sd" id="sds">'+dh+'</div></div><div class="sh2">左右滑动查看更多 <span class="ar">\u203a</span></div><div class="cc2"><span class="ctt">组 合 寓 意</span><span class="ctx">'+r.cm+'</span></div><button class="br" onclick="dS()">换 一 批 推 荐</button></div>';
+  const se=document.getElementById("ps"),mL=document.getElementById("mL"),mR=document.getElementById("mR"),ds=document.querySelectorAll("#sds .dt"),ce=document.getElementById("cu"),W=192;
+  if(se){
+    se.addEventListener("scroll",function(){
+      const sl=se.scrollLeft,sw=se.scrollWidth-se.clientWidth;
+      mL.classList.toggle("hd",sl<10);
+      mR.classList.toggle("hd",sl>sw-10);
+      const i=Math.min(T-1,Math.round(sl/W));
+      ce.textContent=i+1;
+      for(let j=0;j<ds.length;j++)ds[j].classList.toggle("ac",j===i);
+    });
+    for(let i=0;i<ds.length;i++){
+      (function(idx,d){d.addEventListener("click",function(){se.scrollTo({left:idx*W,behavior:"smooth"});});})(i,ds[i]);
+    }
+  }
+  setTimeout(function(){const el=c.querySelector(".rs");if(el)el.scrollIntoView({behavior:"smooth",block:"start"});},100);
+}
+iS();
+</script>
+</body>
+</html>
